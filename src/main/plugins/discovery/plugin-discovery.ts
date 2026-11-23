@@ -28,6 +28,7 @@ import { readPluginManifestText } from '../artifacts/plugin-manifest-file'
 import { readPluginCurrentPointer } from '../installation/plugin-current-pointer'
 import { hashPluginTree } from '../artifacts/plugin-content-hash'
 import { pluginDevChangeCount } from '../development/plugin-dev-revision'
+import { logPluginManifestWarnings } from './plugin-manifest-warning-log'
 
 const INSTALLED_PLUGIN_DISCOVERY_CONCURRENCY = 8
 
@@ -117,9 +118,7 @@ async function readManifestDir(
     installedPublisher ?? localPluginPublisher(parsed.manifest.publisher)
   )
   const pluginKey = qualifiedPluginKey(manifest)
-  for (const warning of parsed.warnings ?? []) {
-    console.warn(`[plugins] ${pluginKey}: ${warning}`)
-  }
+  logPluginManifestWarnings(rootDir, pluginKey, parsed.warnings ?? [])
   if (!satisfiesOrcaEngineRange(hostVersion, manifest.engines.orca)) {
     return {
       pluginKey,
